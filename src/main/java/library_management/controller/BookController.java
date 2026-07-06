@@ -3,6 +3,7 @@ package library_management.controller;
 import library_management.model.Book;
 import library_management.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +23,13 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Book> getBookById(@PathVariable Long id)
-    {
-        return bookService.getBookById(id);
-
+    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+        Optional<Book> book = bookService.getBookById(id);
+        if (book.isPresent()) {
+            return ResponseEntity.ok(book.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
