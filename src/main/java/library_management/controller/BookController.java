@@ -43,4 +43,16 @@ public class BookController {
         bookService.deleteBook(id);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book bookDetails)
+    {
+        Optional<Book> book = bookService.updateBook(id, bookDetails);
+        if (book.isPresent()){
+            return ResponseEntity.ok(book.get());
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
