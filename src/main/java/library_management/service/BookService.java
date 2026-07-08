@@ -27,8 +27,16 @@ public class BookService {
         return bookRepository.save(book);
     }
 
-    public void deleteBook(Long id){
-        bookRepository.deleteById(id);
+    public boolean deleteBook(Long id){
+        boolean exists = bookRepository.existsById(id);
+        if (exists){
+
+            bookRepository.deleteById(id);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public Optional<Book> updateBook(Long id, Book bookDetails){
