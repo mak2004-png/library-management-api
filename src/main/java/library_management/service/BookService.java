@@ -1,5 +1,6 @@
 package library_management.service;
 
+import library_management.exception.ResourceNotFoundException;
 import library_management.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,44 +20,42 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public Optional<Book> getBookById(Long id){
-        return bookRepository.findById(id);
+    public Book getBookById(Long id){
+
+         return bookRepository.findById(id).
+                 orElseThrow(() -> {
+                     return new ResourceNotFoundException("Book id " + id + " not found");
+                 });
+
     }
 
     public Book addBook(Book book){
         return bookRepository.save(book);
     }
 
-    public boolean deleteBook(Long id){
+    public void deleteBook(Long id){
         boolean exists = bookRepository.existsById(id);
-        if (exists){
+        if (!exists){
+
+            throw  new ResourceNotFoundException("Book id " + id + " not found");
+        }
 
             bookRepository.deleteById(id);
-            return true;
-        }
-        else {
-            return false;
-        }
     }
 
-    public Optional<Book> updateBook(Long id, Book bookDetails){
-        Optional<Book> book = bookRepository.findById(id);
-        if(book.isPresent()){
-        Book existingBook = book.get();
+    public Book updateBook(Long id, Book bookDetails){
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> {
+                    return new ResourceNotFoundException("Book id " + id + " not found");
+                });
 
-        existingBook.setTitle(bookDetails.getTitle());
-        existingBook.setAuthor(bookDetails.getAuthor());
-        existingBook.setAvailable(bookDetails.isAvailable());
-        existingBook.setIsbn(bookDetails.getIsbn());
+        book.setTitle(bookDetails.getTitle());
+        book.setAuthor(bookDetails.getAuthor());
+        book.setAvailable(bookDetails.isAvailable());
+        book.setIsbn(bookDetails.getIsbn());
 
-        return Optional.of(bookRepository.save(existingBook));
+        return bookRepository.save(book);
         }
-
-        else {
-            return Optional.empty();
-        }
-    }
-
 }
 
 
