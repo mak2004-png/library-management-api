@@ -15,4 +15,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDuplicateEmail(DuplicateEmailException exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(DuplicateIsbnException.class)
+    public ResponseEntity<String> handleDuplicateIsbn(DuplicateIsbnException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
 }

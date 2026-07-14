@@ -1,11 +1,13 @@
 package library_management.service;
 
+import library_management.exception.DuplicateIsbnException;
 import library_management.exception.ResourceNotFoundException;
 import library_management.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import library_management.model.Book;
 
@@ -29,6 +31,10 @@ public class BookService {
     }
 
     public Book addBook(Book book){
+        Optional<Book> existingBook = bookRepository.findByIsbn(book.getIsbn());
+        if (existingBook.isPresent()){
+            throw new DuplicateIsbnException("isbn "+ book.getIsbn() +" already exists");
+        }
         return bookRepository.save(book);
     }
 
