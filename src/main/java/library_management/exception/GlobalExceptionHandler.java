@@ -19,4 +19,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleDuplicateIsbn(DuplicateIsbnException exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(BookUnavailableException.class)
+    public ResponseEntity<String> handleUnavailableBook(BookUnavailableException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(BookAlreadyReturnedException.class)
+    public ResponseEntity<String> handleAlreadyReturnedBook(BookAlreadyReturnedException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
 }
