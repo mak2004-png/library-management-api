@@ -1,117 +1,136 @@
-# 📚 Library Management REST API
+📚 Library Management REST API
+A RESTful API for library management built with Java Spring Boot and MySQL. Implements a clean 3-layer architecture (Controller → Service → Repository) with full CRUD operations, entity relationships, and centralized exception handling.
 
-A RESTful API for library management built with Java Spring Boot and MySQL. Implements a clean 3-layer architecture (Controller → Service → Repository) with full CRUD operations.
+🛠️ Tech Stack
+Language: Java 17
+Framework: Spring Boot 4.1.0
+Database: MySQL
+ORM: Spring Data JPA / Hibernate
+Build Tool: Maven
+Testing: Postman
 
-## 🛠️ Tech Stack
-
-- **Language:** Java 17
-- **Framework:** Spring Boot 4.1.0
-- **Database:** MySQL
-- **ORM:** Spring Data JPA / Hibernate
-- **Build Tool:** Maven
-- **Testing:** Postman
-
-## 🏗️ Architecture
-
-```
+🏗️ Architecture
 Controller Layer  →  handles HTTP requests/responses
 Service Layer     →  contains business logic
 Repository Layer  →  communicates with the database
-```
+Exception Layer   →  centralized error handling across all controllers
 
-## 📁 Project Structure
-
-```
+📁 Project Structure
 src/main/java/library_management/
 ├── controller/
-│   └── BookController.java     # REST endpoints
+│   ├── BookController.java
+│   ├── MemberController.java
+│   └── IssuedBookController.java
 ├── model/
-│   └── Book.java               # Entity / database table
+│   ├── Book.java
+│   ├── Member.java
+│   └── IssuedBook.java          # links a Book and a Member (@ManyToOne)
 ├── repository/
-│   └── BookRepository.java     # Database operations
+│   ├── BookRepository.java
+│   ├── MemberRepository.java
+│   └── IssuedBookRepository.java
 ├── service/
-│   └── BookService.java        # Business logic
+│   ├── BookService.java
+│   ├── MemberService.java
+│   └── IssuedBookService.java
+├── exception/
+│   ├── ResourceNotFoundException.java
+│   ├── DuplicateIsbnException.java
+│   ├── DuplicateEmailException.java
+│   ├── BookUnavailableException.java
+│   ├── BookAlreadyReturnedException.java
+│   └── GlobalExceptionHandler.java
 └── LibraryManagementApplication.java
-```
 
-## 🚀 API Endpoints
+🚀 API Endpoints
 
+**Books**
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/books` | Get all books |
-| GET | `/books/{id}` | Get book by ID |
-| POST | `/books` | Add a new book |
-| DELETE | `/books/{id}` | Delete a book |
+| GET | /books | Get all books |
+| GET | /books/{id} | Get book by ID |
+| POST | /books | Add a new book |
+| PUT | /books/{id} | Update a book |
+| DELETE | /books/{id} | Delete a book |
 
-## 📋 Sample Request
+**Members**
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | /members | Get all members |
+| GET | /members/{id} | Get member by ID |
+| POST | /members | Register a new member |
+| PUT | /members/{id} | Update a member |
+| DELETE | /members/{id} | Delete a member |
 
-**Add a new book (POST /books):**
-```json
+**Issued Books**
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | /issued-books | Get all issued book records |
+| POST | /issued-books?bookId={id}&memberId={id} | Issue a book to a member |
+| PUT | /issued-books/{id}/return | Return an issued book |
+
+⚠️ Error Handling
+All errors are handled centrally via a `@RestControllerAdvice` global exception handler, returning clean JSON responses instead of raw stack traces:
+| Status | Scenario |
+|---|---|
+| 404 Not Found | Book, member, or issued-book record doesn't exist |
+| 409 Conflict | Duplicate ISBN, duplicate email, book already checked out, or book already returned |
+| 400 Bad Request | Malformed JSON in request body |
+
+📋 Sample Requests
+
+Add a new book (POST /books):
 {
     "title": "Clean Code",
     "author": "Robert Martin",
     "isbn": "978-0132350884",
     "available": true
 }
-```
 
-**Response:**
-```json
+Issue a book (POST /issued-books?bookId=1&memberId=1):
 {
     "id": 1,
-    "title": "Clean Code",
-    "author": "Robert Martin",
-    "isbn": "978-0132350884",
-    "available": true
+    "book": { "id": 1, "title": "Clean Code", "available": false, ... },
+    "member": { "id": 1, "name": "Ali Khan", ... },
+    "issuedDate": "2026-07-17",
+    "returnDate": null
 }
-```
 
-## ⚙️ How to Run
+⚙️ How to Run
 
-### Prerequisites
-- Java 17
-- MySQL Server
-- Maven
+Prerequisites
+Java 17
+MySQL Server
+Maven
 
-### Setup
-
-```bash
+Setup
 # Clone the repository
 git clone https://github.com/mak2004-png/library-management-api.git
-
 # Navigate into the project
 cd library-management-api
-```
 
 Create a MySQL database:
-```sql
 CREATE DATABASE library_db;
-```
 
-Update `src/main/resources/application.properties` with your MySQL credentials:
-```properties
+Copy src/main/resources/application.properties.example to application.properties and fill in your MySQL credentials:
 spring.datasource.url=jdbc:mysql://localhost:3306/library_db
 spring.datasource.username=root
 spring.datasource.password=your_password
-```
 
-```bash
 # Run the application
 ./mvnw spring-boot:run
-```
 
-API will be available at `http://localhost:8080`
+API will be available at http://localhost:8080
 
-## 🔮 Future Improvements
-- [ ] Member management (register, update, delete members)
-- [ ] Book issuing and return system
-- [ ] Search books by title or author
-- [ ] Exception handling and proper HTTP status codes
-- [ ] JWT authentication
-- [ ] Deployment on Railway/Render
+🔮 Future Improvements
+ Search books by title or author
+ Input validation (required fields, email format)
+ Automated tests (JUnit/Mockito)
+ Pagination and sorting on list endpoints
+ JWT authentication
+ Deployment on Railway/Render
 
-## 👤 Author
-
-**Affan Khan**
-- GitHub: [@mak2004-png](https://github.com/mak2004-png)
-- LinkedIn: [affan-khan-98472a36b](https://www.linkedin.com/in/affan-khan-98472a36b)
+👤 Author
+Affan Khan
+GitHub: @mak2004-png
+LinkedIn: affan-khan-98472a36b
